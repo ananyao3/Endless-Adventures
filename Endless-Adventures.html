@@ -1,0 +1,69 @@
+
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    </head>
+    <body>
+    <img id="img1" width="200"/>
+    <p id="pic-info"></p>
+    <p id="map-link"></p>
+    <input type="file" multiple onchange="getExif(this)" accept="image/jpg, image/jpeg">
+    <pre>Make and model: <span id="makeAndModel"></span></pre>
+    <button onClick="window.location.reload();"> Upload another picture </button>
+    <br/>
+    <br/>
+
+<script>
+
+function getExif(fileInput) {
+    const files = fileInput.files;
+    var img1 = document.getElementById('img1');
+    img1.src = URL.createObjectURL(files[0]);
+}
+
+document.getElementById("img1").onload = function() {
+    EXIF.getData(this, function() {
+        myData = this;
+        console.log("EXIF running");
+        console.log(myData.exifdata);
+        try {
+            var latDegree = myData.exifdata.GPSLatitude[0];
+            var latMinutes = myData.exifdata.GPSLatitude[1];
+            var latSeconds = myData.exifdata.GPSLatitude[2];
+            var longDegree = myData.exifdata.GPSLongitude[0];
+            var longMinutes = myData.exifdata.GPSLongitude[1];
+            var longSeconds = myData.exifdata.GPSLongitude[2];
+            document.getElementById("makeAndModel").innerHTML = "exists";
+
+            var latitude = convertToCoordinate(latDegree, latMinutes, latSeconds);
+            var longitude = convertToCoordinate(longDegree, longMinutes, longSeconds);
+            console.log(latitude);
+            console.log(longitude);
+
+            document.getElementById('map-link').innerHTML = '<a href="http://www.google.com/maps/place/'+latitude+','+longitude+'" target="_blank">Google Maps</a>';
+
+        } catch (err) {
+            document.getElementById("makeAndModel").innerHTML = "not exist";
+        }
+    });
+}
+
+function clearAttribute() {
+    console.clear();
+    delete myData;
+}
+
+function convertToCoordinate(degree, minutes, seconds) {
+    return degree + minutes/60 + seconds/3600;
+}
+
+
+</script>
+
+<p> Thank you for using this gps coordinate reader. If you would like to find the coordinates of another
+    image, please refresh the page and upload another image!
+</p>
+
+</body>
+</html>
+
