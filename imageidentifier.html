@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <title> Endless Adventures </title> 
+    <link rel="stylesheet" href="imageidentifier.css">
+   </head>
+<body>
+  <nav>
+    <div class="nav-content">
+        <div class="logo">
+            <img src="airplane.png" width="33px">
+          </div>
+      <ul class="nav-links">
+        <li><a href="index.html">home</a></li>
+        <li><a href="imageidentifier.html">image identifier</a></li>
+        <li><a href="traveldiary.html">travel diary</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="home">
+    <br> <br> <br> <br> <br> <br> <br>
+    <div class="image">
+    <center> <img id="img1" width="200"> </center>
+    <br>
+    <center> <p> <span id="makeAndModel"></span> </p> </center>
+    <br>
+    <center> <p id="mapLink"> </p> </center>
+    <br>
+    <center>
+    <input type="file" multiple onchange="getExif(this)" accept="image/jpg, image/jpeg">
+    <button class="button" onClick="window.location.reload();"> Upload Another Picture </button>
+    <br>
+    <br>
+    <font size="+1"> <p> Please note that your image must be a .jpg or .jpeg file before uploading it to the image identifier. </p>
+    <p> If it is in a different image format, please convert it using an online converter. </p> </font>
+    </center>
+    </div>
+  </section>
+
+  <script>
+  let nav = document.querySelector("nav");
+    window.onscroll = function() {
+      if(document.documentElement.scrollTop > 20){
+        nav.classList.add("sticky");
+      }else {
+        nav.classList.remove("sticky");
+      }
+    }
+
+    function getExif(fileInput) {
+        const files = fileInput.files;
+        var img1 = document.getElementById('img1');
+        img1.src = URL.createObjectURL(files[0]);
+    }
+
+    document.getElementById("img1").onload = function() {
+        EXIF.getData(this, function() {
+            myData = this;
+            console.log("EXIF running");
+            console.log(myData.exifdata);
+            try {
+                var latDegree = myData.exifdata.GPSLatitude[0];
+                var latMinutes = myData.exifdata.GPSLatitude[1];
+                var latSeconds = myData.exifdata.GPSLatitude[2];
+                var longDegree = myData.exifdata.GPSLongitude[0];
+                var longMinutes = myData.exifdata.GPSLongitude[1];
+                var longSeconds = myData.exifdata.GPSLongitude[2];
+
+                var latitude = convertToCoordinate(latDegree, latMinutes, latSeconds);
+                var longitude = convertToCoordinate(longDegree, longMinutes, longSeconds);
+                console.log(latitude);
+                console.log(longitude);
+
+                document.getElementById('mapLink').innerHTML = '<a href="http://www.google.com/maps/place/'+latitude+','+longitude+'" target="_blank">Google Maps Link</a>';
+
+            } catch (err) {
+                document.getElementById("mapLink").innerHTML = "The image you uploaded doesn't have any associated GPS data.";
+            }
+
+            var makeExists = false;
+            var modelExists = false;
+            
+            if (myData.exifdata.Make) {
+                makeExists = true;
+                var make = myData.exifdata.Make;
+            }
+
+            if (myData.exifdata.Model) {
+                modelExists = true;
+                var model = myData.exifdata.Model;
+            }
+
+            if (makeExists == false && modelExists == true) {
+                document.getElementById("makeAndModel").innerHTML = "The image doesn't have any associated make information. The model is " `${model}`;
+            } else if (makeExists == true && modelExists == false) {
+                document.getElementById("makeAndModel").innerHTML = "The image doesn't have any associated model information. The make is " `${make}`;
+            } else if (makeExists == false && modelExists == false) {
+                document.getElementById("makeAndModel").innerHTML = "The image you uploaded doesn't have any associated make or model information.";
+            } else {
+                document.getElementById("makeAndModel").innerHTML = `${make} ${model}`;
+            }
+            
+        });
+    }
+
+    function clearAttribute() {
+        console.clear();
+        delete myData;
+    }
+
+    function convertToCoordinate(degree, minutes, seconds) {
+        return degree + minutes/60 + seconds/3600;
+    }
+  </script>
+
+</body>
+</html>
