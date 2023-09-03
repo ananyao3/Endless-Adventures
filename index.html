@@ -1,63 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+     <title> Endless Adventures </title> 
+    <link rel="stylesheet" href="index.css">
+   </head>
+<body>
+  <nav>
+    <div class="nav-content">
+      <div class="logo">
+        <img src="airplane.png" width="33px">
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">home</a></li>
+        <li><a href="imageidentifier.html">image identifier</a></li>
+        <li><a href="traveldiary.html">travel diary</a></li>
+      </ul>
+    </div>
+  </nav>
+  <section class="home"></section>
 
-<html>
-    <head>
-        <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
-    </head>
-    <body>
-    <img id="img1" width="200"/>
-    <p id="pic-info"></p>
-    <p id="map-link"></p>
-    <input type="file" multiple onchange="getExif(this)" accept="image/jpg, image/jpeg">
-    <pre>Make and model: <span id="makeAndModel"></span></pre>
-    <button onClick="window.location.reload();"> Upload another picture </button>
-    <br/>
-    <br/>
+  <div class="text">
+    <p><h2>Attention All Travel Fanatics!</h2>
+    <p>Have you ever taken a photo on your trip that sat on your phone or camera for years, and when you went back to see it, 
+      you had no idea where it was taken? Or, have you ever had the urge to travel, but had no idea where to go? Then this 
+      website is for you! Welcome to Endless Travels, a website where you can upload a picture in the image finder tab and receive
+      and exact Google Maps link for where the image was taken, along with the device make and model it was taken on! If you ever 
+      need inspiration on locations to travel to, take a look at my travel diary which has pictures from my own travels. </p>
+    <br> <p> Happy travelling :)</p>
+  </div>
 
-<script>
+  <script>
+  let nav = document.querySelector("nav");
+    window.onscroll = function() {
+      if(document.documentElement.scrollTop > 20){
+        nav.classList.add("sticky");
+      }else {
+        nav.classList.remove("sticky");
+      }
+    }
+  </script>
 
-function getExif(fileInput) {
-    const files = fileInput.files;
-    var img1 = document.getElementById('img1');
-    img1.src = URL.createObjectURL(files[0]);
-}
-
-document.getElementById("img1").onload = function() {
-    EXIF.getData(this, function() {
-        myData = this;
-        console.log("EXIF running");
-        console.log(myData.exifdata);
-        try {
-            var latDegree = myData.exifdata.GPSLatitude[0];
-            var latMinutes = myData.exifdata.GPSLatitude[1];
-            var latSeconds = myData.exifdata.GPSLatitude[2];
-            var longDegree = myData.exifdata.GPSLongitude[0];
-            var longMinutes = myData.exifdata.GPSLongitude[1];
-            var longSeconds = myData.exifdata.GPSLongitude[2];
-            document.getElementById("makeAndModel").innerHTML = "exists";
-
-            var latitude = convertToCoordinate(latDegree, latMinutes, latSeconds);
-            var longitude = convertToCoordinate(longDegree, longMinutes, longSeconds);
-            console.log(latitude);
-            console.log(longitude);
-
-            document.getElementById('map-link').innerHTML = '<a href="http://www.google.com/maps/place/'+latitude+','+longitude+'" target="_blank">Google Maps</a>';
-
-        } catch (err) {
-            document.getElementById("makeAndModel").innerHTML = "not exist";
-        }
-    });
-}
-
-function clearAttribute() {
-    console.clear();
-    delete myData;
-}
-
-function convertToCoordinate(degree, minutes, seconds) {
-    return degree + minutes/60 + seconds/3600;
-}
-
-</script>
 </body>
 </html>
-
